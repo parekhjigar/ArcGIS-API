@@ -6,19 +6,64 @@
     <link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css" />
   </head>
   <body>
+    <button id="satellite">Satellite Map</button>
+    <button id="streets">Street Map</button>
+    <button id="topo">Topo Map</button>
+    <select id="listservices"></select>
+    <div id="mapview" style="width: 1000px; height: 500px;">Map</div>
     <script>
-      let map1;
+      let topomap;
+      let satmap;
+      let streetsmap;
       let mapview;
-      require(["esri/Map", "esri/views/MapView"], function (Map, MapView) {
-        map1 = new Map({ basemap: "topo" });
-        mapview = new MapView({
+      let lastcenter;
+      require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/views/SceneView",
+        "esri/request",
+      ], function (Map, MapView, SceneView, Request) {
+        topomap = new Map({ basemap: "topo" });
+        satmap = new Map({ basemap: "satellite" });
+        streetsmap = new Map({ basemap: "streets" });
+
+        let viewoptions = {
           container: "mapview",
-          map: map1,
-          zoom: 15,
+          map: streetsmap,
+          zoom: 1,
           center: [144.96631377084088, -37.81840490743272],
+          scale: 10000,
+        };
+        sceneview = new SceneView(viewoptions);
+
+        let url = "http://server.arcgisonline.com/arcgis/rest/?f=json";
+        let options = { responseType: "json" };
+
+        Request(url, options).then(function (response) {
+          let result = response.data;
+          let listservices = document.getElementById("listservices");
+
+          for (let i = 0; i < result.services.length; i++) {
+            let option = document.createElement("option");
+            option.textContent = result.services[i].name;
+            listservices.appendChild(option);
+          }
         });
       });
+
+      document.getElementById("topo").addEventListener("click", function () {
+        sceneview.map = topomap;
+      });
+
+      document
+        .getElementById("satellite")
+        .addEventListener("click", function () {
+          sceneview.map = satmap;
+        });
+
+      document.getElementById("streets").addEventListener("click", function () {
+        sceneview.map = streetsmap;
+      });
     </script>
-    <div id="mapview" style="width: 1000px; height: 500px;">Map</div>
   </body>
 </html>
