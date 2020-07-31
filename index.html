@@ -17,15 +17,19 @@
       let streetsmap;
       let mapview;
       let lastcenter;
+      let graphicsLayer;
       require([
         "esri/Map",
         "esri/views/MapView",
         "esri/views/SceneView",
         "esri/request",
-      ], function (Map, MapView, SceneView, Request) {
-        topomap = new Map({ basemap: "topo" });
-        satmap = new Map({ basemap: "satellite" });
-        streetsmap = new Map({ basemap: "streets" });
+        "esri/layers/GraphicsLayer",
+        "esri/widgets/Sketch",
+      ], function (Map, MapView, SceneView, Request, GraphicsLayer, Sketch) {
+        topomap = new Map({ basemap: "topo", layers: [graphicsLayer] });
+        satmap = new Map({ basemap: "satellite", layers: [graphicsLayer] });
+        streetsmap = new Map({ basemap: "streets", layers: [graphicsLayer] });
+        graphicsLayer = new GraphicsLayer();
 
         let viewoptions = {
           container: "mapview",
@@ -49,6 +53,13 @@
             listservices.appendChild(option);
           }
         });
+
+        var sketch = new Sketch({
+          view: topomap,
+          layer: graphicsLayer,
+        });
+
+        view.ui.add(sketch, "top-right");
       });
 
       document.getElementById("topo").addEventListener("click", function () {
