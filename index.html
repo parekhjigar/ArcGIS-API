@@ -54,8 +54,15 @@
           }
         });
 
+        var view = new MapView({
+          container: "viewDiv",
+          map: map,
+          center: [-118.80543, 34.027],
+          zoom: 13,
+        });
+
         var sketch = new Sketch({
-          view: topomap,
+          view: view,
           layer: graphicsLayer,
         });
 
