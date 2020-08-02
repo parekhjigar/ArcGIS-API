@@ -6,39 +6,26 @@
     <link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css" />
   </head>
   <body>
-    <button id="satellite">Satellite Map</button>
-    <button id="streets">Street Map</button>
-    <button id="topo">Topo Map</button>
     <select id="listservices"></select>
     <div id="mapview" style="width: 1000px; height: 500px;">Map</div>
     <script>
-      let topomap;
-      let satmap;
-      let streetsmap;
+      let map;
       let mapview;
-      let lastcenter;
-      let graphicsLayer;
-      require([
-        "esri/Map",
-        "esri/views/MapView",
-        "esri/views/SceneView",
-        "esri/request",
-        "esri/layers/GraphicsLayer",
-        "esri/widgets/Sketch",
-      ], function (Map, MapView, SceneView, Request, GraphicsLayer, Sketch) {
-        topomap = new Map({ basemap: "topo", layers: [graphicsLayer] });
-        satmap = new Map({ basemap: "satellite", layers: [graphicsLayer] });
-        streetsmap = new Map({ basemap: "streets", layers: [graphicsLayer] });
-        graphicsLayer = new GraphicsLayer();
+
+      require(["esri/Map", "esri/views/MapView", "esri/request"], function (
+        Map,
+        MapView,
+        Request
+      ) {
+        map = new Map({ basemap: "streets" });
 
         let viewoptions = {
           container: "mapview",
-          map: streetsmap,
+          map: map,
           zoom: 1,
           center: [144.96631377084088, -37.81840490743272],
           scale: 10000,
         };
-        sceneview = new SceneView(viewoptions);
 
         let url = "http://server.arcgisonline.com/arcgis/rest/?f=json";
         let options = { responseType: "json" };
@@ -54,33 +41,7 @@
           }
         });
 
-        var view = new MapView({
-          container: "viewDiv",
-          map: map,
-          center: [-118.80543, 34.027],
-          zoom: 13,
-        });
-
-        var sketch = new Sketch({
-          view: view,
-          layer: graphicsLayer,
-        });
-
-        view.ui.add(sketch, "top-right");
-      });
-
-      document.getElementById("topo").addEventListener("click", function () {
-        sceneview.map = topomap;
-      });
-
-      document
-        .getElementById("satellite")
-        .addEventListener("click", function () {
-          sceneview.map = satmap;
-        });
-
-      document.getElementById("streets").addEventListener("click", function () {
-        sceneview.map = streetsmap;
+        mapview = new MapView(viewoptions);
       });
     </script>
   </body>
